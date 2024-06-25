@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 #include <stdint.h>
 #include "decode.h"
@@ -27,7 +28,7 @@ size_t decode(uint8_t *buffer, size_t n, uint8_t **result)
     size_t sz = 0, result_size = n;
     *result = (uint8_t *) malloc(result_size);
     cur = 510;
-    for (size_t i = 512; i < n - 1; i++)
+    for (size_t i = 512 + sizeof(size_t); i < n - 1; i++)
     {
         for (size_t j = 0; j < 8; j++)
         {
@@ -61,5 +62,7 @@ size_t decode(uint8_t *buffer, size_t n, uint8_t **result)
             cur = 510;
         }
     }
-    return sz;
+    size_t m;
+    memcpy(&m, &(buffer[512]), sizeof(m));
+    return m;
 }

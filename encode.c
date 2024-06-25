@@ -101,7 +101,7 @@ size_t encode(uint8_t *buffer, size_t n, uint8_t **result)
 
     uint16_t byte_buf;
     uint8_t offset = 0;
-    size_t num_bytes = 512;
+    size_t num_bytes = 512 + sizeof(size_t);
     for (size_t i = 0; i < n; i++) {
         byte_buf |= path[buffer[i]] << offset;
         offset += depth[buffer[i]];
@@ -121,9 +121,11 @@ size_t encode(uint8_t *buffer, size_t n, uint8_t **result)
         sz *= 2;
     }
     (*result)[num_bytes++] = (uint8_t) byte_buf;
-
+    
     for (size_t i = 0; i < 511; i++)
         (*result)[i] = (uint8_t) p[i];
+
+    memcpy(&((*result)[512]), &n, sizeof(n));
 
     return num_bytes;
 }
